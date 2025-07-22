@@ -6,16 +6,44 @@ ESP8266WebServer server(80);
 String ssid = "";
 String password = "";
 
-void handleRoot() {
+void handleRoot() 
+{
   server.send(200, "text/html", "ESP is working");
 }
 
-void handleSendMessage() {
-  if (server.hasArg("text")) {
+void handleSendMessage() 
+{
+  if (server.hasArg("text")) 
+  {
     String msg = server.arg("text");
     Serial.println("Received: " + msg);
-    server.send(200, "text/plain", "Hi Alireza");
-  } else {
+    if(msg == "hello")
+    {
+      server.send(200, "text/plain", "Hi Alireza");
+    } 
+    else if(msg == "turn on io 0")
+    {
+      digitalWrite(0, HIGH);   // Turn on GPIO 0
+      server.send(200, "text/plain", "Io 0 is on");
+    } 
+    else if(msg == "turn on io 2")
+    {
+      digitalWrite(2, HIGH);  // Turn on GPIO 2
+      server.send(200, "text/plain", "Io 2 is on");
+    } 
+    else if(msg == "turn off io 0")
+    {
+      digitalWrite(0, LOW);  // Turn off GPIO 0
+      server.send(200, "text/plain", "Io 0 is off");
+    } 
+    else if(msg == "turn off io 2")
+    {
+      digitalWrite(2, LOW);  // Turn off GPIO 2
+      server.send(200, "text/plain", "Io 2 is off");
+    }
+  } 
+  else 
+  {
     server.send(400, "text/plain", "No message received");
   }
 }
@@ -45,9 +73,16 @@ void handleSetWiFi() {
 }
 
 void setup() {
+  delay(1000);
+
+  pinMode(0, OUTPUT);  // Set GPIO 0 as output
+  pinMode(2, OUTPUT);  // Set GPIO 1 as output
+  digitalWrite(0, LOW);   // Turn off GPIO 0
+  digitalWrite(2, LOW);   // Turn off GPIO 1
+
   Serial.begin(115200);
-  WiFi.softAP("ESP-Setup", "12345678");
-  Serial.println("AP Mode Started. Connect to ESP-Setup");
+  WiFi.softAP("ALIOT", "1122334455");
+  Serial.println("AP Mode Started. Connect to ALIOT");
 
   server.on("/", handleRoot);
   server.on("/message", handleSendMessage);
